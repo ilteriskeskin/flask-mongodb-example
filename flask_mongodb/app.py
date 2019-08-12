@@ -5,10 +5,10 @@ from flask_dance.contrib.slack import make_slack_blueprint, slack
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'linuxdegilgnulinux'
 app.config[
-    'MONGO_URI'] = "mongodb://ilteriskeskin:Msaia21322312.@myflask-shard-00-00-raeh0.mongodb.net:27017,myflask-shard-00-01-raeh0.mongodb.net:27017,myflask-shard-00-02-raeh0.mongodb.net:27017/test?ssl=true&replicaSet=myFlask-shard-0&authSource=admin&retryWrites=true&w=majority"
+    'MONGO_URI'] = "mongodb://ilteriskeskin:<password>@myflask-shard-00-00-raeh0.mongodb.net:27017,myflask-shard-00-01-raeh0.mongodb.net:27017,myflask-shard-00-02-raeh0.mongodb.net:27017/test?ssl=true&replicaSet=myFlask-shard-0&authSource=admin&retryWrites=true&w=majority"
 
-app.config["SLACK_OAUTH_CLIENT_ID"] = '711101969589.708601483569'
-app.config["SLACK_OAUTH_CLIENT_SECRET"] = '4ce072c2adcff06a1a11dde3c56680f5'
+app.config["SLACK_OAUTH_CLIENT_ID"] = ''
+app.config["SLACK_OAUTH_CLIENT_SECRET"] = ''
 slack_bp = make_slack_blueprint(scope=["admin,identify,bot,incoming-webhook,channels:read,chat:write:bot,links:read"])
 app.register_blueprint(slack_bp, url_prefix="/login")
 
