@@ -1,9 +1,17 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from flask_pymongo import PyMongo
+from flask_dance.contrib.slack import make_slack_blueprint, slack
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'linuxdegilgnulinux'
 app.config[
-    "MONGO_URI"] = "mongodb://ilteriskeskin:<password>@cluster0-shard-00-00-raeh0.mongodb.net:27017,cluster0-shard-00-01-raeh0.mongodb.net:27017,cluster0-shard-00-02-raeh0.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true&w=majority"
+    'MONGO_URI'] = "mongodb://ilteriskeskin:Msaia21322312.@myflask-shard-00-00-raeh0.mongodb.net:27017,myflask-shard-00-01-raeh0.mongodb.net:27017,myflask-shard-00-02-raeh0.mongodb.net:27017/test?ssl=true&replicaSet=myFlask-shard-0&authSource=admin&retryWrites=true&w=majority"
+
+app.config["SLACK_OAUTH_CLIENT_ID"] = '711101969589.708601483569'
+app.config["SLACK_OAUTH_CLIENT_SECRET"] = '4ce072c2adcff06a1a11dde3c56680f5'
+slack_bp = make_slack_blueprint(scope=["admin,identify,bot,incoming-webhook,channels:read,chat:write:bot,links:read"])
+app.register_blueprint(slack_bp, url_prefix="/login")
+
 mongo = PyMongo(app)
 
 
@@ -12,20 +20,25 @@ def home():
     return render_template("index.html")
 
 
-# @app.route('/create', methods=['POST'])
-# def create():
-#     if 'profile_image' in request.files:
-#         profile_image = request.files['profile_image']
-#         mongo.save_file(profile_image.filename, profile_image)
-#         mongo.db.insert({'username': request.form.get('username'), 'profile_image_name': profile_image.filename})
-#     return 'Done!'
-
-
 @app.route('/create', methods=['POST'])
 def create():
     username = request.form.get('username')
-    mongo.db.user.insert({'username': username})
-    return render_template('profile.html')
+    mongo.db.user.insert_one({'username': username})
+
+    if not slack.authorized:
+        return redirect(url_for("slack.login"))
+    resp = slack.post("chat.postMessage", data={
+        "text": username,
+        "channel": "#general",
+        "icon_emoji": ":male-technologist:",
+    })
+
+    b = resp.text
+    assert resp.json()["ok"], resp.text
+    print('-----------------')
+    print(b)
+    print('-----------------')
+    return 'I just said "Hello, world!" in the #general channel!'
 
 
 if __name__ == '__main__':
