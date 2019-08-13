@@ -22,23 +22,26 @@ def home():
 
 @app.route('/create', methods=['POST'])
 def create():
-    username = request.form.get('username')
-    mongo.db.user.insert_one({'username': username})
-
     if not slack.authorized:
         return redirect(url_for("slack.login"))
     resp = slack.post("chat.postMessage", data={
-        "text": username,
+        "text": 'HeyBooster!',
         "channel": "#general",
         "icon_emoji": ":male-technologist:",
     })
 
-    b = resp.text
+    txt = resp.text
+    username = request.form.get('username')
+    mongo.db.user.insert_one({'username': username, 'text': txt})
     assert resp.json()["ok"], resp.text
-    print('-----------------')
-    print(b)
-    print('-----------------')
+    database()
     return 'I just said "Hello, world!" in the #general channel!'
+
+
+def database():
+    a = mongo.db.user.find()
+    for i in a:
+        print(i)
 
 
 if __name__ == '__main__':
