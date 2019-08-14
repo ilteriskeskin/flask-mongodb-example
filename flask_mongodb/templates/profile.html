@@ -5,8 +5,15 @@
     <title>Profile</title>
 </head>
 <body>
-    <h2>
-        Username
-    </h2>
+
+    {% for i in db %}
+        <ul>
+            <li>
+                <b>{{ i.username }}</b>
+                <br>
+                {{ i.text }}
+            </li>
+        </ul>
+    {% endfor %}
 </body>
 </html>

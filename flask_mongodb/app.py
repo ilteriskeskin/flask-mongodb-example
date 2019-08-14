@@ -34,14 +34,13 @@ def create():
     username = request.form.get('username')
     mongo.db.user.insert_one({'username': username, 'text': txt})
     assert resp.json()["ok"], resp.text
-    database()
-    return 'I just said "Hello, world!" in the #general channel!'
+    return redirect('/')
 
 
+@app.route('/database', methods=['GET', 'POST'])
 def database():
-    a = mongo.db.user.find()
-    for i in a:
-        print(i)
+    db = mongo.db.user.find()
+    return render_template('profile.html', db=db)
 
 
 if __name__ == '__main__':
