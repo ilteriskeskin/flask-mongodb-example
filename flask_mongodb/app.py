@@ -29,7 +29,7 @@ def create():
         "channel": "#general",
         "icon_emoji": ":male-technologist:",
     })
-
+    print('TOKEN: ', slack.token)
     txt = resp.text
     username = request.form.get('username')
     mongo.db.user.insert_one({'username': username, 'text': txt})
